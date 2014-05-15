@@ -1,15 +1,68 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Functions to build a matrix with cached inverse.
+##
+## Usage (suppose A is an invertible matrix):
+##
+## To create the cached object:
+##    Acached  <- makeCacheMatrix(A)
+##
+## To retrieve the inverse:
+##    Ainverse <- cacheSolve(Acached)
+##
+## See descriptions of each function below.
+## Implementation tested on magic squares matrixes
+## (see package "magic") of dimensions 3 and 5
+## (4 is not invertible).
 
-## Write a short comment describing this function
+
+## MAKECACHEMATRIX:
+## This function creates a caché object that stores
+## the matrix and assigns a variable to hold the caché
+## of the inverse matrix. Note that the inverse is not
+## calculated by this function, since at the creation
+## of the object we might still don't need the inverse,
+## (we might even not need it at all).
 
 makeCacheMatrix <- function(x = matrix()) {
-
+    
+    # This function is more than less the same as
+    # the makeVector example in https://class.coursera.org/rprog-003
+    
+    m <- NULL
+    set <- function(y) {
+        x <<- y
+        m <<- NULL
+    }
+    get <- function() x
+    setinv <- function(inv) m <<- inv
+    getinv <- function() m
+    list(set = set, get = get,
+         setinv = setinv,
+         getinv = getinv)
 }
 
 
-## Write a short comment describing this function
 
+## CACHESOLVE:
+## This function is to be called when the inverse matrix
+## is needed. Note that its argument is the caché object.
+## The first time it is called, the inverse matrix is 
+## calculated by means of an internal call to solve(),
+## and stored. On subsequent calls, the inverse is not
+## calculated but retrieved from its storage.
+##
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+    
+    # Try to retrieve the inverse from the cache.
+    # If it is empty, tell the user that we need
+    # to calculate the inverse; then calculate
+    # Finally, return the inverse.
+    
+    m <- x$getinv()
+    
+    if(is.null(m)) {
+        message("no cached inverse found, calculating")
+        m <- solve(x$get(), ...)
+        x$setinv(m)
+    }
+    m    
 }
