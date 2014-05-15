@@ -28,14 +28,18 @@ makeCacheMatrix <- function(x = matrix()) {
     # the makeVector example in https://class.coursera.org/rprog-003
     
     m <- NULL
-    set <- function(y) {
-        x <<- y
+    set <- function(y) { # This function sets the value of the matrix,
+        x <<- y          # and a nulled variable for the cached inverse
         m <<- NULL
     }
-    get <- function() x
-    setinv <- function(inv) m <<- inv
-    getinv <- function() m
-    list(set = set, get = get,
+    
+    get <- function() x  # Retrieve the matrix
+    
+    setinv <- function(inv) m <<- inv # Store the inverse
+    
+    getinv <- function() m   # retrieve cached inverse
+    
+    list(set = set, get = get,     # return results
          setinv = setinv,
          getinv = getinv)
 }
@@ -44,7 +48,8 @@ makeCacheMatrix <- function(x = matrix()) {
 
 ## CACHESOLVE:
 ## This function is to be called when the inverse matrix
-## is needed. Note that its argument is the caché object.
+## is needed. Note that its argument is the caché object,
+## not the original matrix.
 ## The first time it is called, the inverse matrix is 
 ## calculated by means of an internal call to solve(),
 ## and stored. On subsequent calls, the inverse is not
@@ -52,17 +57,21 @@ makeCacheMatrix <- function(x = matrix()) {
 ##
 cacheSolve <- function(x, ...) {
     
-    # Try to retrieve the inverse from the cache.
-    # If it is empty, tell the user that we need
-    # to calculate the inverse; then calculate
-    # Finally, return the inverse.
+    # Return an inverse for the matrix stored in x
     
-    m <- x$getinv()
+    m <- x$getinv()      # recover content of caché
     
-    if(is.null(m)) {
+    if(is.null(m)) {     # if we retrieved an empty caché...
+        
+        # tell the user
         message("no cached inverse found, calculating")
+        
+        # then calculate the inverse
         m <- solve(x$get(), ...)
+        
+        # store inverse in cache for subsequent calls
         x$setinv(m)
     }
-    m    
+    
+    m   # return inverse, either calculated or retrieved
 }
